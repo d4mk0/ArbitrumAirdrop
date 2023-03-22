@@ -65,6 +65,13 @@ class OneInchDrain
         gas_limit: gas_limit,
       )
     end
+  rescue IOError => e
+    if e.message.include?("insufficient funds for gas")
+      puts "APPROVE FAILED"
+      puts "#{e.inspect}"
+    else
+      raise e
+    end
   end
 
   def try_swap
@@ -167,6 +174,7 @@ class OneInchDrain
 
 
     puts "#{masked_string(private_key)} #{masked_string(eth_key.address.to_s)} ETH balance: #{rounded_eth.colorize(eth_color)} (~$#{estimated_eth_in_usd.to_s}}) Token balance: #{rounded_token.colorize(token_color)}. Claimable: #{rounded_claimable.colorize(claimable_color)}. Approved: #{rounded_approved}. Ratio: #{rounded_ratio.colorize(ratio_color)}. Need ratio: #{swap_if_price_higher}. #{notice}. TXID: #{latest_tx_id}"
+    puts "\n\n"
   end
 end
 

@@ -83,7 +83,12 @@ class OneInchDrain
       slippage: slippage
     }#.merge(params.slice(:protocols, :fee, :gasLimit, :connectorTokens, :complexityLevel, :mainRouteParts, :parts, :gasPrice, :fromAddress, :slippage))  
     query_params_string = URI.encode_www_form(request_params.compact.to_a)
-    response_json = JSON.parse(Net::HTTP.get_response(URI("https://api.1inch.io/v5.0/42161/swap?#{query_params_string}")).body)
+
+    response_json = 
+      Timeout::timeout(5) do
+        JSON.parse(Net::HTTP.get_response(URI("https://api.1inch.io/v5.0/42161/swap?#{query_params_string}")).body)
+      end
+
 
     @current_ratio = 
       (response_json.dig('toTokenAmount').to_i / (10 ** response_json.dig('toToken', 'decimals').to_i).to_f) /
@@ -172,8 +177,10 @@ class OneInchDrain
         :green
       end
 
+    rounded_amount_to_swap = amount_to_swap.to_s
+    amount_to_swap_color = amount_to_swap <= rounded_token.to_f || amount_to_swap <= rounded_claimable.to_f ? :green : :red
 
-    puts "#{masked_string(private_key)} #{masked_string(eth_key.address.to_s)} ETH balance: #{rounded_eth.colorize(eth_color)} (~$#{estimated_eth_in_usd.to_s}}) Token balance: #{rounded_token.colorize(token_color)}. Claimable: #{rounded_claimable.colorize(claimable_color)}. Approved: #{rounded_approved}. Ratio: #{rounded_ratio.colorize(ratio_color)}. Need ratio: #{swap_if_price_higher}. #{notice}. TXID: #{latest_tx_id}"
+    puts "#{masked_string(private_key)} #{masked_string(eth_key.address.to_s)} ETH balance: #{rounded_eth.colorize(eth_color)} (~$#{estimated_eth_in_usd.to_s}}) Token balance: #{rounded_token.colorize(token_color)}. Claimable: #{rounded_claimable.colorize(claimable_color)}. Approved: #{rounded_approved}. Ratio: #{rounded_ratio.colorize(ratio_color)}. Need ratio: #{swap_if_price_higher}. Amount to swap: #{rounded_amount_to_swap.colorize(amount_to_swap_color)}. #{notice}. TXID: #{latest_tx_id}"
     puts "\n\n"
   end
 end

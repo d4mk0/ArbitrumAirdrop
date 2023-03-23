@@ -178,6 +178,7 @@ class Claimer
     gas_limit = (gas_limit_for_claim_tx || retryable_eth_client(:eth_estimate_gas, params)["result"].to_i(16) * 1.3).to_i
 
     required_eth_for_tx = gas_limit * gwei_for_client * Eth::Unit::GWEI
+    ethers_balances[private_key] = eth_balance(private_key)
     required_eth_balance_statuses[private_key] = [ethers_balances[private_key] >= required_eth_for_tx, required_eth_for_tx]
 
     return if !required_eth_balance_statuses[private_key][0]

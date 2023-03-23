@@ -63,6 +63,9 @@ module Helpers
       retry
     elsif e.message.include?("Proxy Authentication Required")
       puts "Proxy problem: #{current_proxy}"
+    elsif e.message.include?("nonce too low")
+      puts "bad nonce, retrying"
+      retry
     else
       puts "#{rpc.get_rpc} #{current_proxy}"
       raise e
@@ -115,11 +118,12 @@ module Helpers
   rescue IOError, Eth::Client::ContractExecutionError => e
     if e.message.include?("max fee per gas less")
       puts "Need new gwei #{e.message}"
-      @gwei_for_client = (retryable_eth_client(:eth_gas_price)['result'].to_i(16) / Eth::Unit::GWEI).round(2)
+      puts @gwei_for_client = (retryable_eth_client(:eth_gas_price)['result'].to_i(16) / Eth::Unit::GWEI).round(2) + 0.02
+      puts "New gwei info: #{gwei_for_client}"
       retry
-    elsif e.message.include?("nonce too low")
-      puts "bad nonce, retrying"
-      retry
+    # elsif e.message.include?("nonce too low")
+    #   puts "bad nonce, retrying"
+    #   retry
     # elsif e.message.include?("TokenDistributor: nothing to claim")
     #   puts "some transactiong error with nothing to claim from TokenDistributor"
     #   retry

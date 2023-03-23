@@ -1,11 +1,11 @@
-require_relative './common/rpc'
-require_relative './common/logger'
-require_relative './common/helpers'
-
 require 'eth'
 require 'forwardable'
 require 'parallel'
 require 'colorize'
+
+require_relative './common/rpc'
+require_relative './common/logger'
+require_relative './common/helpers'
 
 class Seeder
   include Helpers

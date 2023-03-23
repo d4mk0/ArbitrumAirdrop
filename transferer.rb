@@ -1,11 +1,11 @@
-require_relative './common/rpc'
-require_relative './common/logger'
-require_relative './common/helpers'
-
 require 'eth'
 require 'forwardable'
 require 'parallel'
 require 'colorize'
+
+require_relative './common/rpc'
+require_relative './common/logger'
+require_relative './common/helpers'
 
 class Transferer
   include Helpers
@@ -102,7 +102,7 @@ class Transferer
 
     return if !required_eth_balance_statuses[private_key][0]
 
-    pp "#{ethers_balances[private_key]} #{gwei_for_client} #{gas_limit}"
+    # pp "#{ethers_balances[private_key]} #{gwei_for_client} #{gas_limit}"
     txid =
       retryable_eth_client(:transact_and_wait,
         eth_contract,

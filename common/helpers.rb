@@ -53,6 +53,7 @@ module Helpers
       c.public_send(method, ...)
     end
   rescue IOError, OpenSSL::SSL::SSLError, Errno::ECONNRESET, JSON::ParserError, Net::OpenTimeout, SocketError, Errno::ECONNRESET, Net::ReadTimeout, Errno::ETIMEDOUT, Eth::Client::ContractExecutionError, Timeout::Error, Errno::ECONNREFUSED, Net::HTTPClientException, Errno::EPIPE => e
+    # current_proxy = nil
     if e.message.include?("Too Many Requests") || e.message.include?("Rate Limit") || e.message.include?("SSL_connect") || e.message.include?("Failed to open TCP") || e.message.include?("getaddrinfo") || e.message.include?("reset by peer") || e.message.include?("SSL_read") || e.message.include?("Net::ReadTimeout") || e.message.include?("Exceeded the quota usage") || e.message.include?("unexpected token at") || e.message.include?("timed out") || e.message.include?("throughput") || e.message.include?("compute units") || e.is_a?(Timeout::Error) || e.message.include?("Broken pipe")  || e.message.include?("forcibly closed by") || e.message.include?("we can't execute this request") || e.message.include?("Internal server error")
       if !@changing_rpc_now
         @changing_rpc_now = true
